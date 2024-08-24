@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita - Veterinaria</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agendar Cita</h1>
+            <p>Seleccione una fecha y hora disponibles para su cita.</p>
+        </header>
+
+        <div id="calendar">
+            <div class="week">
+                <div class="day" data-day="Lunes">
+                    <h3>Lunes</h3>
+                    <div class="slots"></div>
+                </div>
+                <div class="day" data-day="Martes">
+                    <h3>Martes</h3>
+                    <div class="slots"></div>
+                </div>
+                <div class="day" data-day="Miércoles">
+                    <h3>Miércoles</h3>
+                    <div class="slots"></div>
+                </div>
+                <div class="day" data-day="Jueves">
+                    <h3>Jueves</h3>
+                    <div class="slots"></div>
+                </div>
+                <div class="day" data-day="Viernes">
+                    <h3>Viernes</h3>
+                    <div class="slots"></div>
+                </div>
+                <div class="day" data-day="Sábado">
+                    <h3>Sábado</h3>
+                    <div class="slots"></div>
+                </div>
+                <div class="day" data-day="Domingo">
+                    <h3>Domingo</h3>
+                    <div class="slots"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="appointment-details">
+            <h2>Detalles de la Cita</h2>
+            <p id="selected-slot">Seleccione una fecha y hora.</p>
+            <button id="book-appointment" disabled>Solicitar Cita</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
