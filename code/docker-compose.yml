@@ -1,0 +1,46 @@
+version: '3.9'
+
+services: 
+  mysqldb2:
+    image: mysql:8.3
+    container_name: mysqldb2
+    command: --default-authentication-plugin=caching_sha2_password --sql_mode=""
+    restart: always
+    networks:
+      - appnetwork
+    environment:
+      MYSQL_ROOT_PASSWORD: $ROOT_PASSWORD
+      MYSQL_USER: $USER
+      MYSQL_PASSWORD: $ROOT_PASSWORD
+      MYSQL_DATABASE: $DATABASE
+    ports:
+      - $DB_PORT:$DB_PORT
+    expose:
+      - $DB_PORT
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: animals_vet
+
+    image: node-mysql-app
+    ports:
+      - "$PORT_APP:$PORT_APP"
+    networks:
+      - appnetwork
+    links:
+      - mysqldb2:mysqldb2
+    depends_on:
+      - mysqldb2
+    command: sh -c "/wait && node index.js"
+    volumes:
+      - ./coverage:/code/coverage:rw
+    environment:
+      - WAIT_HOSTS=mysqldb2:$DB_PORT
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+    restart: on-failure
+networks:
+  appnetwork:
+    driver: bridge
