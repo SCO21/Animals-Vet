@@ -18,21 +18,37 @@
                 <h2>Solicitar Cita</h2>
                 <p>Agende una cita para su mascota.</p>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="mis-citas">
                 <h2>Mis Citas</h2>
                 <p>Vea y gestione sus citas.</p>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="contactar-whatsapp">
                 <h2>Contactar por WhatsApp</h2>
                 <p>Comuníquese con nosotros.</p>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="ver-servicios">
                 <h2>Ver Servicios</h2>
                 <p>Conozca los servicios que ofrecemos.</p>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.getElementById("solicitar-cita").onclick = function() {
+            window.location.href = "../agendamientoCitas/agendamiento.html";
+        };
+
+        document.getElementById("mis-citas").onclick = function() {
+            window.location.href = "../misCitas/misCitas.html";
+        };
+
+        document.getElementById("contactar-whatsapp").onclick = function() {
+            window.location.href = "https://wa.me/3024061472"; // Reemplaza con tu número de WhatsApp
+        };
+
+        document.getElementById("ver-servicios").onclick = function() {
+            window.location.href = "../servicios/servicios.html"; // Reemplaza con la ruta correcta de tu página de servicios
+        };
+    </script>
 </body>
 </html>
