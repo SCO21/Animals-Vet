@@ -15,11 +15,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let selectedSlot = null;
 
+    // Load booked appointments
+    const bookedAppointments = JSON.parse(localStorage.getItem('misCitas')) || [];
+
     calendar.forEach(day => {
         const dayName = day.getAttribute('data-day');
         const slotsContainer = day.querySelector('.slots');
         
-        slots[dayName].forEach(slotTime => {
+        // Filter out booked slots
+        const availableSlots = slots[dayName].filter(slot => 
+            !bookedAppointments.some(appointment => 
+                appointment.day === dayName && appointment.time === slot
+            )
+        );
+
+        // Clear existing slots
+        slotsContainer.innerHTML = '';
+
+        availableSlots.forEach(slotTime => {
             const slot = document.createElement('div');
             slot.className = 'slot';
             slot.textContent = slotTime;
@@ -38,6 +51,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     bookButton.addEventListener('click', function () {
-        alert(`Cita solicitada para: ${selectedSlotElement.textContent}`);
+        if (selectedSlot) {
+            const appointment = {
+                day: selectedSlot.parentElement.getAttribute('data-day'),
+                time: selectedSlot.textContent
+            };
+
+            // Add appointment to localStorage
+            bookedAppointments.push(appointment);
+            localStorage.setItem('misCitas', JSON.stringify(bookedAppointments));
+
+            // Remove slot from the calendar
+            selectedSlot.remove();
+            selectedSlotElement.textContent = 'Seleccione una fecha y hora.';
+            bookButton.disabled = true;
+        }
     });
 });
