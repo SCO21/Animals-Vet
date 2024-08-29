@@ -1,0 +1,27 @@
+FROM node:20.11.0
+
+WORKDIR /code
+
+# Copia los package.json y package-lock.json primero
+COPY package*.json ./
+
+# Instala las dependencias incluyendo bcrypt
+RUN npm install
+
+# Copia el resto del código
+COPY ./ ./
+
+# Reinstala bcrypt para asegurar que se construya correctamente
+RUN npm rebuild bcrypt --build-from-source
+
+# Instala sharp con las configuraciones específicas
+RUN rm -rf node_modules/sharp
+RUN SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=glibc sharp
+
+# Configura el script de espera
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait /wait
+RUN chmod +x /wait
+
+EXPOSE 4000
+
+CMD [ "node", "index.js" ]

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "start-db": "docker-compose --env-file ./.env up --build"
+    "database": "docker-compose --env-file ./.env up --build"
   },
   "keywords": [],
   "author": "",
