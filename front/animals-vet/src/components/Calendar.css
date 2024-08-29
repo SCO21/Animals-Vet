@@ -1,0 +1,138 @@
+/* src/components/Calendar.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #f0f8ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  background-color: #ffffffcc;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: #004d40;
+  margin-bottom: 10px;
+}
+
+#calendar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.week {
+  display: flex;
+  width: 100%;
+  max-width: 1000px; /* Tamaño fijo para mantener consistencia */
+  overflow-x: auto; /* Hacer que el calendario sea desplazable en dispositivos móviles */
+}
+
+.day {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.day h3 {
+  margin: 0;
+  color: #004d40;
+}
+
+.day span {
+  font-size: 0.9em;
+  color: #888;
+}
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.slot {
+  padding: 5px;
+  background-color: #e0f7fa;
+  border: 1px solid #004d40;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.slot:hover {
+  background-color: #b2ebf2;
+}
+
+.slot.selected {
+  background-color: #004d40;
+  color: #fff;
+}
+
+#appointment-details {
+  text-align: center;
+}
+
+#book-appointment {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #ff6f61;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#book-appointment:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.volver {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-volver {
+  background-color: #ff6f61;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-volver:hover {
+  background-color: #e55b4e;
+}

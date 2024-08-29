@@ -1,0 +1,46 @@
+/* src/components/MyAppointments.css */
+
+.container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  header {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  #appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .appointment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .appointment-info {
+    flex: 1;
+  }
+  
+  .delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .delete-button img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain; /* Ajusta el tamaño del ícono sin deformarlo */
+  }
