@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
-    const loginData = {
-      email,
-      password,
-    };
+    const loginData = { email, password };
 
     try {
       const response = await fetch('http://localhost:4000/users/auth', {
@@ -29,33 +26,13 @@ const Login = ({ onLogin }) => {
       if (response.ok) {
         localStorage.setItem('jwtToken', result.jwtToken); // Almacena el token JWT
         onLogin(); // Notifica a App que el usuario ha iniciado sesión
-
-        // SweetAlert2 para éxito
-        Swal.fire({
-          icon: 'success',
-          title: 'Inicio de sesión exitoso',
-          text: 'Has iniciado sesión correctamente.',
-        }).then(() => {
-          navigate('/main-menu'); // Redirige al menú principal
-        });
-
+        navigate('/main-menu'); // Redirige al menú principal
       } else {
-        // SweetAlert2 para error
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: result.mensaje || 'Error en el inicio de sesión.',
-        });
+        setErrorMessage(result.mensaje || 'Error en el inicio de sesión');
       }
     } catch (error) {
       console.error('Error al enviar los datos de inicio de sesión:', error);
-      
-      // SweetAlert2 para error de solicitud
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Error en la solicitud. Inténtalo de nuevo más tarde.',
-      });
+      setErrorMessage('Error en la solicitud');
     }
   };
 
@@ -85,6 +62,7 @@ const Login = ({ onLogin }) => {
         </div>
         <button type="submit">Iniciar Sesión</button>
       </form>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
       <p className="toggle-text">¿No tienes una cuenta? <button type="button" onClick={() => navigate('/register')}>Regístrate</button></p>
     </div>
   );

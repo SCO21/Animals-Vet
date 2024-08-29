@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Register = ({ onSwitch }) => {
+const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleRegisterSubmit = async (event) => {
     event.preventDefault();
 
-    const userData = {
-      name,
-      email,
-      password
-    };
+    const userData = { name, email, password };
 
     try {
       const response = await fetch('http://localhost:4000/users/register', {
@@ -32,6 +30,7 @@ const Register = ({ onSwitch }) => {
         setEmail('');
         setPassword('');
         setErrorMessage('');
+        navigate('/login'); // Redirige a la página de inicio de sesión después del registro
       } else {
         setErrorMessage(result.mensaje || 'Error en el registro');
       }
@@ -78,7 +77,7 @@ const Register = ({ onSwitch }) => {
         <button type="submit">Crear Cuenta</button>
       </form>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-      <p className="toggle-text">¿Ya tienes una cuenta? <button type="button" onClick={() => onSwitch('login')}>Inicia Sesión</button></p>
+      <p className="toggle-text">¿Ya tienes una cuenta? <button type="button" onClick={() => navigate('/login')}>Inicia Sesión</button></p>
     </div>
   );
 };

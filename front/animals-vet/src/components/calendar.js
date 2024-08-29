@@ -1,5 +1,5 @@
-// src/components/CalendarComponent.js
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import './Calendar.css'; // Asegúrate de que este archivo CSS exista
 
 const CalendarComponent = () => {
@@ -132,7 +132,12 @@ const CalendarComponent = () => {
         console.log('Respuesta del servidor al intentar agendar:', data);
 
         if (response.ok && data.status === 201 && data.message === 'Appointment created successfully') {
-          alert('Cita agendada exitosamente!');
+          Swal.fire({
+            title: 'Éxito!',
+            text: 'Cita agendada exitosamente!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
           // Actualiza las citas y slots
           setAppointments(prevAppointments => [
             ...prevAppointments,
@@ -152,14 +157,32 @@ const CalendarComponent = () => {
           setSelectedSlot(null);
         } else {
           console.error('Error al agendar la cita:', data);
+          Swal.fire({
+            title: 'Error',
+            text: `Error al agendar la cita: ${data.message}`,
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
           setError(`Error al agendar la cita: ${data.message}`);
         }
       } catch (error) {
         console.error('Error booking appointment:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Error al agendar la cita',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
         setError('Error booking appointment');
       }
     } else {
       console.error('No slot selected');
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'No se ha seleccionado ningún horario.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
       setError('No slot selected');
     }
   };

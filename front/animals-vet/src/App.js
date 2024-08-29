@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
@@ -30,6 +29,10 @@ const App = () => {
         <Routes>
           <Route
             path="/"
+            element={isAuthenticated ? <Navigate to="/main-menu" /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/login"
             element={isAuthenticated ? <Navigate to="/main-menu" /> : <Login onLogin={handleLogin} />}
           />
           <Route
@@ -38,17 +41,16 @@ const App = () => {
           />
           <Route
             path="/main-menu"
-            element={isAuthenticated ? <MainMenu onLogout={handleLogout} /> : <Navigate to="/" />}
+            element={isAuthenticated ? <MainMenu onLogout={handleLogout} /> : <Navigate to="/login" />}
           />
           <Route
             path="/solicitar-cita"
-            element={isAuthenticated ? <CalendarComponent /> : <Navigate to="/" />}
+            element={isAuthenticated ? <CalendarComponent /> : <Navigate to="/login" />}
           />
           <Route
             path="/mis-citas"
-            element={isAuthenticated ? <MyAppointments /> : <Navigate to="/" />}
+            element={isAuthenticated ? <MyAppointments /> : <Navigate to="/login" />}
           />
-          {/* Agrega rutas adicionales aquí */}
         </Routes>
       </div>
     </Router>
