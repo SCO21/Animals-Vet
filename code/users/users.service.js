@@ -6,7 +6,7 @@ const { secret } = require("../_config/config"); // Asegúrate de almacenar tu c
 
 class UsersService {
     async register(req) {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
         
         // Verificar si el email ya existe
         if (await models.tbl_users.findOne({ where: { email } })) {
@@ -15,11 +15,11 @@ class UsersService {
                 mensaje: "The email is already registered",
             };
         }
-
         // Crear una nueva cuenta
         const user = new models.tbl_users({
             name,
             email,
+            role,
             password: await bcrypt.hash(password, 10), // Hashear la contraseña
         });
 
@@ -27,7 +27,7 @@ class UsersService {
         await user.save();
 
         // Retornar detalles básicos del usuario
-        const data = { name: user.name, email: user.email };
+        const data = { name: user.name, email: user.email, role: user.role };
 
         return {
             status: 200,
@@ -54,7 +54,7 @@ class UsersService {
         return {
             mensaje: "You have successfully logged in",
             status: 200,
-            ...{ name: user.name, email: user.email },
+            ...{ name: user.name, email: user.email, role: user.role },
             jwtToken,
         };
     }
@@ -64,6 +64,7 @@ class UsersService {
             {
                 sub: user.email,
                 id: user.email,
+                role: user.role,
                 expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
             },
             secret,

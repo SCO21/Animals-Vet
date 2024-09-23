@@ -5,6 +5,9 @@ import Register from './components/Register';
 import MainMenu from './components/MainMenu';
 import CalendarComponent from './components/calendar'; // Asegúrate de que el nombre del archivo es correcto
 import MyAppointments from './components/MyAppointments';
+import MyAgenda from './components/MyAgenda'; // Asegúrate de importar tu componente MyAgenda
+import RegisterWorkDay from './components/RegisterWorkDay'; // Componente para registrar día de trabajo
+import InventoryPanel from './components/InventoryPanel';
 import './App.css'; // Aquí debes poner tu CSS
 
 const App = () => {
@@ -17,6 +20,7 @@ const App = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('jwtToken'); // Limpiar token al cerrar sesión
+    localStorage.removeItem('userRole'); // Limpiar rol al cerrar sesión
   };
 
   return (
@@ -50,6 +54,18 @@ const App = () => {
           <Route
             path="/mis-citas"
             element={isAuthenticated ? <MyAppointments /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/mi-agenda" // Nueva ruta para la agenda del veterinario
+            element={isAuthenticated ? <MyAgenda /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/registrar-dia"
+            element={isAuthenticated ? <RegisterWorkDay /> : <Navigate to="/login" />} // Ruta existente
+          />
+          <Route
+            path="/inventario"
+            element={isAuthenticated ? <InventoryPanel /> : <Navigate to="/login" />} // Ruta para el inventario
           />
         </Routes>
       </div>

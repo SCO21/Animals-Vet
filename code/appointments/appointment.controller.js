@@ -43,6 +43,22 @@ class AppointmentController {
         })
         .catch(next);
     }
+    static getHorary(req, res, next){
+        new AppointmentService()
+        .getHorary(req)
+        .then((data) => {
+          res.json(data);
+        })
+        .catch(next);
+    }
+    static addHorary(req, res, next){
+        new AppointmentService()
+        .addHorary(req)
+        .then((data) => {
+          res.json(data);
+        })
+        .catch(next);
+    }
 }
 
 module.exports = AppointmentController

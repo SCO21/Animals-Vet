@@ -17,6 +17,11 @@ module.exports = router.head('/sync', async function (_req, res) {
     res.json()
 })
 // initialize();
+console.log('host: ', host)
+console.log('port: ', port)
+console.log('password: ', password)
+console.log('database: ', database)
+console.log('user: ', user)
 async function initialize() {
     const connection = mysql.createPool({ host: host, port: port, user: user, password: password, database: database }); //Conexion para crear tablas
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`); //Creacion de base de datos si no existe

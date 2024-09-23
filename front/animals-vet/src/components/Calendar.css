@@ -136,3 +136,8 @@ h1 {
 .btn-volver:hover {
   background-color: #e55b4e;
 }
+.slot.selected {
+  background-color: #f39c12; /* Color de resaltado */
+  color: white;
+  font-weight: bold;
+}

@@ -24,7 +24,7 @@ async function authorize(req, res, next) {
         // Usuario autenticado correctamente, asignar datos adicionales si es necesario
         req.auth.name = user.name;
         req.auth.email = user.email;
-
+        req.auth.role = user.role;
         next();
     });
 }

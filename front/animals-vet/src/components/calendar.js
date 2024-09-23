@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import './Calendar.css'; // Asegúrate de que este archivo CSS exista
+import './Calendar.css';
 
 const CalendarComponent = () => {
   const [appointments, setAppointments] = useState([]);
   const [availableSlots, setAvailableSlots] = useState({});
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [dates, setDates] = useState({});
+  const [weekDates, setWeekDates] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -14,8 +14,13 @@ const CalendarComponent = () => {
       try {
         const token = localStorage.getItem('jwtToken');
         if (!token) {
-          console.error('No token found');
           setError('No token found. Please log in again.');
+          Swal.fire({
+            title: 'Error',
+            text: 'No token found. Please log in again.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
           return;
         }
 
@@ -28,23 +33,19 @@ const CalendarComponent = () => {
         });
 
         if (!response.ok) {
-          console.error(`Network response was not ok: ${response.statusText}`);
           setError(`Error fetching appointments: ${response.statusText}`);
           return;
         }
 
         const result = await response.json();
-        console.log('Datos recibidos de la API:', result);
-
+        console.log("Appointments fetched:", result);
         if (result.status === 200 && Array.isArray(result.data)) {
           setAppointments(result.data);
         } else {
-          console.error('Error: Expected an array of appointments');
           setError('Error: Expected an array of appointments');
           setAppointments([]);
         }
       } catch (error) {
-        console.error('Error fetching appointments:', error);
         setError('Error fetching appointments');
       }
     };
@@ -52,58 +53,79 @@ const CalendarComponent = () => {
     fetchAppointments();
   }, []);
 
+  const getWeekDates = () => {
+    const startOfWeek = new Date('2024-09-22'); // Empieza el domingo 22 de septiembre de 2024
+    const daysOfWeek = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+
+    const dates = daysOfWeek.map((_, index) => {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + index);
+        return {
+            day: daysOfWeek[index],
+            date: date.toISOString().split('T')[0], // Formato YYYY-MM-DD
+        };
+    });
+
+    setWeekDates(dates);
+};
+
+
   useEffect(() => {
-    const generateAvailableSlots = () => {
-      const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-      const startHour = 10;
-      const endHour = 18;
-      const slots = {};
-      const today = new Date();
+    getWeekDates();
+  }, []);
 
-      days.forEach((day, index) => {
-        const date = new Date(today);
-        date.setDate(today.getDate() + index);
-        const dayName = days[index];
-        if (dayName !== "Domingo") {
-          const dailySlots = [];
-          for (let hour = startHour; hour < endHour; hour++) {
-            const slotTime = `${hour}:00`;
-            const isAvailable = !appointments.some(appointment => {
-              const appointmentDate = new Date(appointment.date);
-              const appointmentHour = new Date(appointment.start_time).getHours();
-              const isSlotOccupied = appointmentDate.toDateString() === date.toDateString() &&
-                appointmentHour === hour;
+  const fetchAvailableSlots = async () => {
+    try {
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        setError('No token found. Please log in again.');
+        return;
+      }
 
-              if (isSlotOccupied) {
-                console.log(`Cita ocupada detectada: ${appointmentDate.toDateString()} ${slotTime}`);
-              }
-
-              return isSlotOccupied;
-            });
-
-            if (isAvailable) {
-              dailySlots.push(slotTime);
-            }
-          }
-          slots[dayName] = dailySlots;
-          setDates(prevDates => ({
-            ...prevDates,
-            [dayName]: date.toISOString().split('T')[0] // Formato YYYY-MM-DD
-          }));
-        } else {
-          slots[dayName] = [];
-        }
+      const response = await fetch('http://localhost:4000/appointments/getHorary', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
-      setAvailableSlots(slots);
-    };
+      if (!response.ok) {
+        setError(`Error fetching available slots: ${response.statusText}`);
+        return;
+      }
 
-    generateAvailableSlots();
-  }, [appointments]);
+      const result = await response.json();
+      console.log("Available slots fetched:", result);
+      if (result.status === 200 && result.data) {
+        const formattedSlots = {};
+
+        for (const day in result.data) {
+          if (result.data.hasOwnProperty(day)) {
+            formattedSlots[day] = Object.keys(result.data[day]).filter(
+              slot => result.data[day][slot].disponible
+            );
+          }
+        }
+
+        console.log("Formatted available slots:", formattedSlots);
+        setAvailableSlots(formattedSlots);
+      } else {
+        setError('Error: Expected valid data structure');
+        setAvailableSlots({});
+      }
+    } catch (error) {
+      setError('Error fetching available slots');
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableSlots();
+  }, []);
 
   const handleSlotClick = (day, slot) => {
+    console.log("Slot clicked:", { day, slot });
     setSelectedSlot({ day, slot });
-    console.log(`Slot clicked: ${day} ${slot}`); // Verifica que se esté registrando el clic
   };
 
   const handleBookAppointment = async () => {
@@ -111,10 +133,11 @@ const CalendarComponent = () => {
       try {
         const token = localStorage.getItem('jwtToken');
         if (!token) {
-          console.error('No token found');
           setError('No token found. Please log in again.');
           return;
         }
+
+        const selectedDate = weekDates.find(d => d.day === selectedSlot.day)?.date;
 
         const response = await fetch('http://localhost:4000/appointments/register', {
           method: 'POST',
@@ -123,67 +146,62 @@ const CalendarComponent = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            date: dates[selectedSlot.day],
-            startTime: selectedSlot.slot
+            date: selectedDate,
+            startTime: selectedSlot.slot,
           }),
         });
 
         const data = await response.json();
-        console.log('Respuesta del servidor al intentar agendar:', data);
-
-        if (response.ok && data.status === 201 && data.message === 'Appointment created successfully') {
+        if (response.ok && data.status === 201) {
           Swal.fire({
             title: 'Éxito!',
             text: 'Cita agendada exitosamente!',
             icon: 'success',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
           });
-          // Actualiza las citas y slots
+
           setAppointments(prevAppointments => [
             ...prevAppointments,
             {
-              date: dates[selectedSlot.day],
-              start_time: selectedSlot.slot
-            }
+              date: selectedDate,
+              start_time: selectedSlot.slot,
+            },
           ]);
+
           setAvailableSlots(prevSlots => {
             const updatedSlots = { ...prevSlots };
             const index = updatedSlots[selectedSlot.day].indexOf(selectedSlot.slot);
             if (index > -1) {
-              updatedSlots[selectedSlot.day].splice(index, 1); // Elimina el slot ocupado
+              updatedSlots[selectedSlot.day].splice(index, 1);
             }
             return updatedSlots;
           });
           setSelectedSlot(null);
         } else {
-          console.error('Error al agendar la cita:', data);
           Swal.fire({
             title: 'Error',
             text: `Error al agendar la cita: ${data.message}`,
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
           });
           setError(`Error al agendar la cita: ${data.message}`);
         }
       } catch (error) {
-        console.error('Error booking appointment:', error);
         Swal.fire({
           title: 'Error',
           text: 'Error al agendar la cita',
           icon: 'error',
-          confirmButtonText: 'OK'
+          confirmButtonText: 'OK',
         });
         setError('Error booking appointment');
       }
     } else {
-      console.error('No slot selected');
       Swal.fire({
         title: 'Advertencia',
         text: 'No se ha seleccionado ningún horario.',
         icon: 'warning',
-        confirmButtonText: 'OK'
+        confirmButtonText: 'OK',
       });
-      setError('No slot selected');
     }
   };
 
@@ -198,22 +216,26 @@ const CalendarComponent = () => {
 
       <div id="calendar">
         <div className="week">
-          {Object.keys(availableSlots).map(day => (
+          {weekDates.map(({ day, date }) => (
             <div className="day" key={day} data-day={day}>
               <div className="day-header">
                 <h3>{day}</h3>
-                <span>{dates[day]}</span>
+                <span>{date}</span>
               </div>
               <div className="slots">
-                {availableSlots[day].map((slot, index) => (
-                  <div
-                    key={index}
-                    className={`slot ${selectedSlot?.day === day && selectedSlot?.slot === slot ? 'selected' : ''}`}
-                    onClick={() => handleSlotClick(day, slot)}
-                  >
-                    {slot}
-                  </div>
-                ))}
+                {availableSlots[day] && availableSlots[day].length > 0 ? (
+                  availableSlots[day].map((slot, index) => (
+                    <div
+                      key={index}
+                      className={`slot ${selectedSlot?.day === day && selectedSlot?.slot === slot ? 'selected' : ''}`}
+                      onClick={() => handleSlotClick(day, slot)}
+                    >
+                      {slot}
+                    </div>
+                  ))
+                ) : (
+                  <div>No hay horarios disponibles</div>
+                )}
               </div>
             </div>
           ))}
@@ -222,12 +244,15 @@ const CalendarComponent = () => {
 
       <div id="appointment-details">
         <h2>Detalles de la Cita</h2>
-        <p id="selected-slot">
-          {selectedSlot ? `Cita seleccionada para: ${selectedSlot.day} a las ${selectedSlot.slot}` : 'Seleccione una fecha y hora.'}
-        </p>
-        <button id="book-appointment" onClick={handleBookAppointment} disabled={!selectedSlot}>
-          Solicitar Cita
-        </button>
+        {selectedSlot ? (
+          <div>
+            <p>Dia: {selectedSlot.day}</p>
+            <p>Hora: {selectedSlot.slot}</p>
+            <button onClick={handleBookAppointment}>Agendar Cita</button>
+          </div>
+        ) : (
+          <p>No se ha seleccionado ningún horario.</p>
+        )}
       </div>
     </div>
   );

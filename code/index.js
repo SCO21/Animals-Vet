@@ -26,6 +26,8 @@ app.use("/users", require("./users/routes"));
 
 app.use("/appointments", validator ,require("./appointments/routes"));
 
+app.use("/inventory", validator ,require("./inventory/routes"));
+
 
 
 const port = process.env.NODE_ENV === "dev" ? process.env.PORT || 4000 : 80;

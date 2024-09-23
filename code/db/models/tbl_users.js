@@ -7,6 +7,14 @@ function model(sequelize) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'Client', // Valor predeterminado
+      validate: {
+        isIn: [['Client', 'Vet', 'Secretary']], // Validación para permitir solo estos valores
+      },
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,

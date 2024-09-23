@@ -25,6 +25,8 @@ const Login = ({ onLogin }) => {
 
       if (response.ok) {
         localStorage.setItem('jwtToken', result.jwtToken); // Almacena el token JWT
+        localStorage.setItem('userRole', result.role)
+        console.log(response)
         onLogin(); // Notifica a App que el usuario ha iniciado sesión
         navigate('/main-menu'); // Redirige al menú principal
       } else {
