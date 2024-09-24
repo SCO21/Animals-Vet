@@ -29,6 +29,7 @@ const Login = ({ onLogin }) => {
         console.log(response)
         onLogin(); // Notifica a App que el usuario ha iniciado sesión
         navigate('/main-menu'); // Redirige al menú principal
+        console.log(response)
       } else {
         setErrorMessage(result.mensaje || 'Error en el inicio de sesión');
       }
@@ -37,7 +38,7 @@ const Login = ({ onLogin }) => {
       setErrorMessage('Error en la solicitud');
     }
   };
-
+  
   return (
     <div className="form-container" id="login-container">
       <h2>Iniciar Sesión</h2>

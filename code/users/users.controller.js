@@ -15,7 +15,7 @@ class UsersController {
         new UsersService()
         .authenticate(req)
         .then((data) => {
-          res.json(data);
+          res.status(data.status).json(data);
         })
         .catch(next);
     }
